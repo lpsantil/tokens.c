@@ -39,10 +39,7 @@ indexOf( char* str, char c )
 
    while( '\0' != str[ idx ] )
    {
-      if( str[ idx ] == c )
-      {
-         return( idx );
-      }
+      if( str[ idx ] == c ) return( idx );
 
       idx = idx + 1;
    }
@@ -63,21 +60,12 @@ tokens( char* str, char* prefix, char* suffix )
    double m;
 
    /* Begin tokenization */
-   if( 0 == length ) /* If the source string is empty, return nothing. */
-   {
-      return;
-   }
+   if( 0 == length ) return; /* If the source string is empty, return nothing. */
+
    /* If prefix and suffix strings are not provided, supply defaults. */
-   if( NULL == prefix )
-   {
-      /*prefix = "<>+-&";*/
-      prefix = "!&-=+<>|";
-   }
-   if( NULL == suffix )
-   {
-      /*suffix = "=<>&:";*/
-      suffix = "!&-=+<>|";
-   }
+   if( NULL == prefix ) prefix = "!&-=+<>|";
+
+   if( NULL == suffix ) suffix = "!&-=+<>|";
 
    // Loop through this text, one character at a time.
    c = str[ i ];
@@ -96,11 +84,9 @@ tokens( char* str, char* prefix, char* suffix )
                ( c == '_' ) || ( c == '$' ) )
       {
          from = i;
-         /*str = c;*/
-         /*i += 1;*/i = i + 1;
+         i = i + 1;
          while( true )
          {
-             /*c = this.charAt(i);*/
              c = str[ i ];
              if( ( c >= 'a' && c <= 'z' ) ||
                  ( c >= 'A' && c <= 'Z' ) ||
@@ -108,15 +94,13 @@ tokens( char* str, char* prefix, char* suffix )
                  ( c == '_' ) ||
                  ( c == '$' ) )
              {
-                /*str += c; */
-                /*i += 1;*/i = i + 1;
+                i = i + 1;
              }
              else
              {
                 break;
              }
          }
-         /*result.push(make('name', str));*/
          printToken( "name", str, from, i );
       }
 // number.
@@ -124,129 +108,84 @@ tokens( char* str, char* prefix, char* suffix )
 // possibly '0'.
       else if( c >= '0' && c <= '9' )
       {
-         /*str = c;*/
          from = i;
-         /*i += 1;*/i = i + 1;
+         i = i + 1;
 
 // Look for more digits.
          while( true )
          {
-            /*c = this.charAt(i);*/
             c = str[ i ];
-            if( c < '0' || c > '9' )
-            {
-               break;
-            }
-            /*i += 1;*/i = i + 1;
-            /*str += c;*/
+            if( c < '0' || c > '9' ) break;
+
+            i = i + 1;
          }
 // Look for a decimal fraction part.
          if( c == '.' )
          {
-            /*i += 1;*/i = i + 1;
-            /*str += c;*/
+            i = i + 1;
+
             while( true )
             {
-               /*c = this.charAt(i);*/
                c = str[ i ];
-               if( c < '0' || c > '9' )
-               {
-                  break;
-               }
-               /*i += 1;*/i = i + 1;
-               /*str += c;*/
+               if( c < '0' || c > '9' ) break;
+
+               i = i + 1;
             }
          }
 // Look for an exponent part.
          if( c == 'e' || c == 'E' )
          {
-            /*i += 1;*/i = i + 1;
-            /*str += c;*/
-            /*c = this.charAt(i);*/
+            i = i + 1;
             c = str[ i ];
             if( c == '-' || c == '+' )
             {
-               /*i += 1;*/i = i + 1;
-               /*str += c;*/
-               /*c = this.charAt(i);*/
+               i = i + 1;
                c = str[ i ];
             }
             if( c < '0' || c > '9' )
             {
-               /*make('number', str).error("Bad exponent");*/
                error( "Bad exponent" );
             }
             do
             {
-               /*i += 1;*/i = i + 1;
-               /*str += c;*/
-               /*c = this.charAt(i);*/
+               i = i + 1;
                c = str[ i ];
             } while( c >= '0' && c <= '9' );
          }
 // Make sure the next character is not a letter.
          if( c >= 'a' && c <= 'z' )
          {
-            /*str += c;*/
-            /*i += 1;*/i = i + 1;
-            /*make('number', str).error("Bad number");*/
+            i = i + 1;
             error( "Bad number" );
          }
 
 // Convert the string value to a number. If it is finite, then it is a good
 // token.
-         /*n = +str;
-         if(isFinite(n)) {
-             result.push(make('number', n));
-         } else {
-                make('number', str).error("Bad number");
-         }
-         */
          m = strtod( &str[ from ], &endp );
-         if( ( &str[ from ] == endp ) || !isfinite( m ) )
-         {
-            error( "Bad number" );
-	}
-	printToken( "number", str, from, i );
+         if( ( &str[ from ] == endp ) || !isfinite( m ) ) error( "Bad number" );
+
+         printToken( "number", str, from, i );
 // string
       }
       else if( c == '\'' || c == '"')
       {
          from = i;
-         /*str = '';*/
          q = c;
-         /*i += 1;*/i = i + 1;
+         i = i + 1;
          while( true )
          {
-            /*c = this.charAt(i);*/
             c = str[ i ];
-            if( c < ' ' )
-            {
-               /*
-               make('string', str).error(
-                    (c === '\n' || c === '\r' || c === '')
-                            ? "Unterminated string."
-                            : "Control character in string.",
-                        make('', str)
-                    );
-               */
-               error( "Bad character in string" );
-            }
+            if( c < ' ' ) error( "Bad character in string" );
 // Look for the closing quote.
-            if( c == q )
-            {
-               break;
-            }
+            if( c == q ) break;
 // Look for escapement.
             if( c == '\\' )
             {
-               /*i += 1;*/i = i + 1;
+               i = i + 1;
                if( i >= length )
                {
-                  /*make('string', str).error("Unterminated string");*/
                   error( "Unterminated string" );
                }
-               /*c = this.charAt(i);*/
                c = str[ i ];
                /*
                     switch (c) {
@@ -280,58 +219,45 @@ tokens( char* str, char* prefix, char* suffix )
                 */
                /*if( c == 'b' ){ c = '\b'; break; }*/
             }
-            /*str += c;*/
-            /*i += 1;*/i = i + 1;
+            i = i + 1;
          }
-         /*i += 1;*/i = i + 1;
-         /*result.push(make('string', str));*/
+         i = i + 1;
          printToken( "string", str, from, i );
-         /*c = this.charAt(i);*/
          c = str[ i ];
       }
 // comment.
       else if( c == '/' && str[ i + 1 ] == '/' )
       {
-         /*i += 1;*/i = i + 1;
+         i = i + 1;
          while( true )
          {
-            /*c = this.charAt(i);*/c = str[ i ];
-            if( c == '\n' || c == '\r' || c == '\0' )
-            {
-               break;
-            }
-            /*i += 1;*/i = i + 1;
+            c = str[ i ];
+            if( c == '\n' || c == '\r' || c == '\0' ) break;
+            i = i + 1;
          }
       }
 // combining
       else if( indexOf( prefix, c ) >= 0 )
       {
          from = i;
-         /*str = c;*/
-         /*i += 1;*/i = i + 1;
+         i = i + 1;
          while( true )
          {
-            /*c = this.charAt(i);*/c = str[ i ];
-            if( i >= length || indexOf( suffix, c ) < 0 )
-            {
-               break;
-            }
-            /*str += c;*/
-            /*i += 1;*/i = i + 1;
+            c = str[ i ];
+            if( i >= length || indexOf( suffix, c ) < 0 ) break;
+            i = i + 1;
          }
-         /*result.push(make('operator', str));*/printToken( "operator", str, from, i );
+         printToken( "operator", str, from, i );
       }
 // single-character operator
       else
       {
-         /*i += 1;*/i = i + 1;
-         /*result.push(make('operator', c));*/
+         i = i + 1;
          printToken( "operator", str, from, from + 1 );
-         /*c = this.charAt(i);*/c = str[ i ];
+         c = str[ i ];
       }
-      /*c = this.charAt(i);*/c = str[ i ];
+      c = str[ i ];
    }
-   /*return result;*/
 }
 
 int main( int argc, char** argv )
