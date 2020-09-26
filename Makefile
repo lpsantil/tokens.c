@@ -1,4 +1,4 @@
-# Copyright (c) 2017, Louis P. Santillan <lpsantil@gmail.com>
+# Copyright (c) 2020, Louis P. Santillan <lpsantil@gmail.com>
 # All rights reserved.
 # See LICENSE for licensing details.
 
@@ -27,7 +27,7 @@ HDR =
 IDIR = include
 INC = $(IDIR)/$(HDR)
 EDIR = .
-EXE = tokens.exe
+EXE = tok.exe
 LNK =
 LDIR = lib
 LSRC = $(wildcard src/lib/*.c)
@@ -40,20 +40,20 @@ TOBJ = $(TSRC:.c=.o)
 TSDEPS = $(TSRC:.c=.d)
 TEXE = $(TOBJ:.o=.exe)
 
-TMPCI = $(shell cat tmp.ci.pid 2>/dev/null)
-TMPCT = $(shell cat tmp.ct.pid 2>/dev/null)
-TMPCD = $(shell cat tmp.cd.pid 2>/dev/null)
+#TMPCI = $(shell cat tmp.ci.pid 2>/dev/null)
+#TMPCT = $(shell cat tmp.ct.pid 2>/dev/null)
+#TMPCD = $(shell cat tmp.cd.pid 2>/dev/null)
 
-CILOG ?= tmp.ci.log
+#CILOG ?= tmp.ci.log
 
 # DEPS
-DEPS =
-LIBDEP =
+#DEPS =
+#LIBDEP =
 
 # TDEPS
-TDEPS =
-TAP =
-LIBTAP =
+#TDEPS =
+#TAP =
+#LIBTAP =
 
 ######################################################################
 ######################## DO NOT MODIFY BELOW #########################
@@ -120,38 +120,6 @@ uninstall: .footprint
 -include $(SDEPS) $(LSDEPS) $(TSDEPS)
 
 showconfig: p-OS p-ARCH p-DESTDIR p-CC p-LD p-AR p-CFLAGS p-LDFLAGS p-DDIR p-DSRC p-SRC p-OBJ p-HDR p-IDIR p-INC p-EDIR p-EXE p-TSRC p-TOBJ p-TEXE
-#	@echo "TMPCI="$(TMPCI)
-#	@echo "TMPCT="$(TMPCT)
-#	@echo "TMPCD="$(TMPCD)
-
-#	@echo "OS="$(OS)
-#	@echo "ARCH="$(ARCH)
-#	@echo "MSIZE="$(MSIZE)
-#	@echo "SYSINC="$(SYSINC)
-#	@echo "DESTDIR="$(DESTDIR)
-#	@echo "CFLAGS="$(CFLAGS)
-#	@echo "LDFLAGS="$(LDFLAGS)
-#	@echo "UNISTD_PATH="$(UNISTD_PATH)
-#	@echo "DDIR="$(DDIR)
-#	@echo "DSRC="$(DSRC)
-#	@echo "SRC="$(SRC)
-#	@echo "OBJ="$(OBJ)
-#	@echo "HDR="$(HDR)
-#	@echo "IDIR="$(IDIR)
-#	@echo "INC="$(INC)
-#	@echo "EDIR="$(EDIR)
-#	@echo "EXE="$(EXE)
-#	@echo "LDIR="$(LDIR)
-#	@echo "LSRC="$(LSRC)
-#	@echo "LOBJ="$(LOBJ)
-#	@echo "LNK="$(LNK)
-#	@echo "LIB="$(LIB)
-#	@echo "TSRC="$(TSRC)
-#	@echo "TOBJ="$(TOBJ)
-#	@echo "TEXE="$(TEXE)
-#	@echo "TMPCI="$(TMPCI)
-#	@echo "TMPCT="$(TMPCT)
-#	@echo "TMPCD="$(TMPCD)
 
 gstat:
 	git status
