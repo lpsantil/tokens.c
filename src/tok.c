@@ -1,6 +1,6 @@
 #include <stdio.h>    // printf
 #include <assert.h>   // assert
-#include <string.h>
+//#include <string.h>
 #include <math.h>     // isfinite
 #include <stdlib.h>   // exit
 #include <stdbool.h>  // true
@@ -10,6 +10,14 @@
 
 int lines = 1,
     col = 0;
+
+int
+str_len( const char *string )
+{
+   int length = 0;
+   while( *string ) { string++; length++; }
+   return( length );
+}
 
 void
 error( char* str )
@@ -46,7 +54,7 @@ tokens( char* str, char* prefix, char* suffix )
         q;                      // Quote char */
    int from,                    // Index to start of token */
        i = 0,                   // Index of current char */
-       length = strlen( str );
+       length = str_len( str );
    char* endp;
    double m;
 
