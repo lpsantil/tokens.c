@@ -1,15 +1,13 @@
 #include <stdio.h>    // printf
-#include <assert.h>   // assert
-//#include <string.h>
 #include <math.h>     // isfinite
 #include <stdlib.h>   // exit
 #include <stdbool.h>  // true
-#include <unistd.h>
-#include <fcntl.h>    // open
-#include <sys/stat.h>
+#include <unistd.h>   // read, lseek, SEEK_END, SEEK_SET
+#include <fcntl.h>    // open, O_RDONLY
 
 int lines = 1,
-    col = 0;
+    col = 1,
+    colc = 1;
 
 int
 str_len( const char *string )
@@ -29,7 +27,7 @@ error( char* str )
 void
 printToken( char* type, char* value, int from, int to )
 {
-   printf( "(%i,%i),%s,%.*s\n", lines, col, type, to - from, value + from );
+   printf( "%i,%i,%s,%.*s\n", lines, col, type, to - from, value + from );
 }
 
 int
@@ -71,12 +69,13 @@ tokens( char* str, char* prefix, char* suffix )
    while( c )
    {
       from = i;
+      col = colc;
 
 // Ignore whitespace.
       if( c <= ' ' )
       {
-         if( '\n' == c ) { lines++; col = 0; }
-         i++; col++;
+         if( '\n' == c || '\r' == c || '\0' == c ) { lines++; colc = 0; }
+         i++; colc++;
          c = str[ i ];
       }
 // name.
@@ -84,7 +83,7 @@ tokens( char* str, char* prefix, char* suffix )
                ( c == '_' ) || ( c == '$' ) )
       {
          from = i;
-         i++; col++;
+         i++; colc++;
          while( true )
          {
              c = str[ i ];
@@ -94,7 +93,7 @@ tokens( char* str, char* prefix, char* suffix )
                  ( c == '_' ) ||
                  ( c == '$' ) )
              {
-                i++; col++;
+                i++; colc++;
              }
              else
              {
@@ -109,7 +108,7 @@ tokens( char* str, char* prefix, char* suffix )
       else if( c >= '0' && c <= '9' )
       {
          from = i;
-         i++; col++;
+         i++; colc++;
 
 // Look for more digits.
          while( true )
@@ -117,29 +116,29 @@ tokens( char* str, char* prefix, char* suffix )
             c = str[ i ];
             if( c < '0' || c > '9' ) break;
 
-            i++; col++;
+            i++; colc++;
          }
 // Look for a decimal fraction part.
          if( c == '.' )
          {
-            i++; col++;
+            i++; colc++;
 
             while( true )
             {
                c = str[ i ];
                if( c < '0' || c > '9' ) break;
 
-               i++; col++;
+               i++; colc++;
             }
          }
 // Look for an exponent part.
          if( c == 'e' || c == 'E' )
          {
-            i++; col++;
+            i++; colc++;
             c = str[ i ];
             if( c == '-' || c == '+' )
             {
-               i++; col++;
+               i++; colc++;
                c = str[ i ];
             }
             if( c < '0' || c > '9' )
@@ -148,7 +147,7 @@ tokens( char* str, char* prefix, char* suffix )
             }
             do
             {
-               i++; col++;
+               i++; colc++;
                c = str[ i ];
             } while( c >= '0' && c <= '9' );
          }
@@ -170,7 +169,7 @@ tokens( char* str, char* prefix, char* suffix )
       {
          from = i;
          q = c;
-         i++; col++;
+         i++; colc++;
          while( true )
          {
             c = str[ i ];
@@ -180,7 +179,7 @@ tokens( char* str, char* prefix, char* suffix )
 // Look for escapement.
             if( c == '\\' )
             {
-               i++; col++;
+               i++; colc++;
                if( i >= length )
                {
                   error( "Unterminated string" );
@@ -218,40 +217,40 @@ tokens( char* str, char* prefix, char* suffix )
                 */
                /*if( c == 'b' ){ c = '\b'; break; }*/
             }
-            i++; col++;
+            i++; colc++;
          }
-         i++; col++;
+         i++; colc++;
          printToken( "string", str, from, i );
          c = str[ i ];
       }
 // comment.
       else if( c == '/' && str[ i + 1 ] == '/' )
       {
-         i++; col++;
+         i++; i++;
          while( true )
          {
             c = str[ i ];
             if( c == '\n' || c == '\r' || c == '\0' ) break;
-            i++; //lines++; col = 0;
+            i++;
          }
       }
 // combining
       else if( indexOf( prefix, c ) >= 0 )
       {
          from = i;
-         i++; col++;
+         i++; colc++;
          while( true )
          {
             c = str[ i ];
             if( i >= length || indexOf( suffix, c ) < 0 ) break;
-            i++; col++;
+            i++; colc++;
          }
          printToken( "operator", str, from, i );
       }
 // single-character operator
       else
       {
-         i++; col++;
+         i++; colc++;
          printToken( "operator", str, from, from + 1 );
          c = str[ i ];
       }
@@ -266,8 +265,9 @@ int main( int argc, char** argv )
    lseek( fd, 0, SEEK_SET );
    char buf[ flen ];
    int r = read( fd, buf, flen );
+   if( r < flen ) return( -1 );
    buf[ flen ] = '\0';
-   printf( "%s(%i,%i)\n", argv[ 1 ], flen, r );
+//   printf( "%s(%i,%i)\n", argv[ 1 ], flen, r );
    tokens( buf, NULL, NULL );
    return( 0 );
 }
