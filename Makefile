@@ -9,14 +9,12 @@ DESTDIR ?= /usr/local
 CORES ?= 1
 
 # Basic feature detection
-#OS = $(shell ( cat /etc/os-release | grep "rhel\|fedora\|centos" && echo "rhel" ) || cat /etc/os-release | grep "debian\|ubuntu" && echo "debian" || uname)
 OS ?= $(shell uname)
 ARCH ?= $(shell uname -m)
 
 ######################################################################
 CFLAGS ?= -Os -Wall -std=gnu99 -pedantic
 LDFLAGS ?= -s
-#LDFLAGS ?= -s -nostdlib -Wl,--gc-sections
 
 DDIR = docs
 DSRC =
@@ -27,7 +25,7 @@ HDR =
 IDIR = include
 INC = $(IDIR)/$(HDR)
 EDIR = .
-EXE = tok.exe
+EXE = tokens.exe
 LNK =
 LDIR = lib
 LSRC = $(wildcard src/lib/*.c)
@@ -46,24 +44,13 @@ TEXE = $(TOBJ:.o=.exe)
 
 #CILOG ?= tmp.ci.log
 
-# DEPS
-#DEPS =
-#LIBDEP =
-
-# TDEPS
-#TDEPS =
-#TAP =
-#LIBTAP =
-
 ######################################################################
 ######################## DO NOT MODIFY BELOW #########################
 ######################################################################
 
-.PHONY: all test runtest clean start_ci stop_ci start_ct stop_ct
-.PHONY: start_cd stop_cd install uninstall showconfig gstat gpush
-.PHONY: help print-* tarball
+.PHONY: all test runtest clean install uninstall showconfig
+.PHONY: gstat gpush help print-* tarball
 
-#%.o: %.c $(INC) Makefile
 %.o: %.c Makefile
 	$(CC) $(CFLAGS) -MMD -MP -I$(IDIR) -c $< -o $@
 
@@ -83,28 +70,9 @@ test: $(SYSINC) $(LIB) $(TEXE) Makefile
 runtest: $(TEXE)
 	for T in $^ ; do $(TAP) $$T ; done
 
-#start_ci:
-#	( watch time -p make clean all ) &> $(CILOG) & echo $$! > tmp.ci.pid
-
-#stop_ci:
-#	kill -9 $(TMPCI)
-
-#start_ct:
-#	watch time -p make test & echo $$! > tmp.ct.pid
-
-#stop_ct:
-#	kill -9 $(TMPCT)
-
-#start_cd:
-#	watch time -p make install & echo $$! > tmp.cd.pid
-
-#stop_cd:
-#	kill -9 $(TMPCD)
-
 clean:
 	rm -f $(OBJ) $(EXE) $(LOBJ) $(LIB) $(TOBJ) $(TEXE) $(SYSINC) *.tmp $(SDEPS) $(LSDEPS) $(TSDEPS)
 
-#install: $(INC) $(LIB)
 install: $(INC) $(LIB) $(EXE)
 #	mkdir -p $(DESTDIR)/include/rt0 $(DESTDIR)/lib
 #	rm -f .footprint
