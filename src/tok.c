@@ -1,9 +1,37 @@
-#include <stdio.h>    // printf
-#include <math.h>     // isfinite
-#include <stdlib.h>   // exit
-#include <stdbool.h>  // true
-#include <unistd.h>   // read, lseek, SEEK_END, SEEK_SET
-#include <fcntl.h>    // open, O_RDONLY
+// Converted to C by Louis P. Santillan in 9/2020
+// Comments & Public Domain notice backported in 4/2022
+
+// Based on tokens.js
+// http://crockford.com/javascript/tdop/tdop.html
+// https://github.com/douglascrockford/TDOP
+// Douglas Crockford
+// 2021-05-04
+// Public Domain
+
+
+// Produce an array of simple token objects from a string.
+// A simple token object contains these members:
+//     type: "name", "string", "number", "operator"
+//     value: string or number value of the token
+//     from: index of first character of the token
+//     to: index of the last character + 1
+
+// Comments of the // type are ignored.
+
+// Operators are by default single characters. Multicharacter
+// operators can be made by supplying a string of prefix and
+// suffix characters.
+// characters. For example,
+//     "<>+-&", "=>&:"
+// will match any of these:
+//     <=  >>  >>>  <>  >=  +: -: &: &&: &&
+
+#include <stdio.h>    /* printf */
+#include <math.h>     /* isfinite */
+#include <stdlib.h>   /* exit */
+#include <stdbool.h>  /* true */
+#include <unistd.h>   /* read, lseek, SEEK_END, SEEK_SET */
+#include <fcntl.h>    /* open, O_RDONLY */
 
 int lines = 1,
     col = 1,
@@ -48,10 +76,10 @@ indexOf( char* str, char c )
 void
 tokens( char* str, char* prefix, char* suffix )
 {
-   char c,                      // Current char */
-        q;                      // Quote char */
-   int from,                    // Index to start of token */
-       i = 0,                   // Index of current char */
+   char c,                      /* Current char */
+        q;                      /* Quote char */
+   int from,                    /* Index to start of token */
+       i = 0,                   /* Index of current char */
        length = str_len( str );
    char* endp;
    double m;
@@ -74,7 +102,7 @@ tokens( char* str, char* prefix, char* suffix )
 // Ignore whitespace.
       if( c <= ' ' )
       {
-         if( '\n' == c || '\r' == c || '\0' == c ) { lines++; colc = 0; }
+         if( ( '\n' == c ) || ( '\r' == c ) || ( '\0' == c ) ) { lines++; colc = 0; }
          i++; colc++;
          c = str[ i ];
       }
