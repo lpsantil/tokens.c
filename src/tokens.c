@@ -8,7 +8,6 @@
 // 2021-05-04
 // Public Domain
 
-
 // Produce an array of simple token objects from a string.
 // A simple token object contains these members:
 //     type: "name", "string", "number", "operator"
