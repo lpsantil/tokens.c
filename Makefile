@@ -111,4 +111,4 @@ p-%:
 .PHONY: p-*
 
 help: ## This help target
-	@awk '/^[a-zA-Z0-9\-_+. ]*: #{2}/ { print; }' $(MAKEFILE_LIST)
+	@awk '/^[a-zA-Z0-9\-_+. ]*: ##/ { print; }' $(MAKEFILE_LIST)
