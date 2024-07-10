@@ -283,6 +283,8 @@ tokens( char* str, char* prefix, char* suffix )
       }
       c = str[ i ];
    }
+   lines--;
+   printToken( "(end)", "(end)", 0, 5 );
 }
 
 int main( int argc, char** argv )
